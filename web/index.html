@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MolView-like: AI-enabled Molecular Explorer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- 3Dmol.js for 3D molecular visualization -->
+  <script src="https://3dmol.org/build/3Dmol-min.js"></script>
+  <!-- SmilesDrawer for 2D depiction -->
+  <script src="https://cdn.jsdelivr.net/npm/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+  <!-- ChemDoodle Web Components -->
+  <link rel="stylesheet" href="https://web.chemdoodle.com/assets/css/ChemDoodleWeb.css" />
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb.js"></script>
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb-uis.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">AI MolExplorer</div>
+      <div class="tagline">Search, visualize, and understand molecules</div>
+    </div>
+    <div id="aiStatus" class="ai-status" title="AI backend status">AI: Checking…</div>
+  </header>
+
+  <main class="container">
+    <section class="search-section">
+      <div class="input-row">
+        <input id="queryInput" type="text" placeholder="Search by name (e.g., aspirin) or paste SMILES" />
+        <button id="btnSearch">Search</button>
+        <button id="btnRenderSmiles" class="secondary">Render SMILES</button>
+      </div>
+      <div class="help-text">Tip: Try terms like "glucose", "caffeine", or SMILES like "C1=CC=CC=C1".</div>
+      <div class="alt-results" id="altResults" hidden></div>
+    </section>
+
+    <section class="results-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>2D Structure</h2>
+          <div class="panel-actions">
+            <label>Theme
+              <select id="drawerTheme">
+                <option value="light" selected>Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+            <label>W <input id="svgWidth" type="number" min="100" max="2000" value="500" /></label>
+            <label>H <input id="svgHeight" type="number" min="100" max="2000" value="350" /></label>
+            <button id="btnPreviewSVG" class="secondary">Preview SVG</button>
+            <button id="btnDownloadSVG">Download SVG</button>
+            <button id="btnCopySVG" class="secondary">Copy SVG</button>
+          </div>
+        </div>
+        <canvas id="canvas2d" class="twod-canvas" width="500" height="350"></canvas>
+        <div id="svgContainer" class="svg-container" hidden></div>
+        <div id="twoDStatus" class="status"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>3D Structure</h2>
+        </div>
+        <div id="viewer3d" class="viewer3d"><div class="viewer3d-overlay" id="viewerOverlay">Load or drop a file to render 3D…</div></div>
+        <div id="threeDStatus" class="status"></div>
+        <div class="dropzone" id="dropzone">Drop SDF/MOL files here to visualize</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Properties</h2></div>
+        <div class="props" id="props"></div>
+      </div>
+
+      <div class="panel ai-panel">
+        <div class="panel-header"><h2>AI Assistant</h2></div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div id="typing" class="typing" hidden>Assistant is typing…</div>
+        <div class="chat-input-row">
+          <textarea id="chatInput" rows="2" placeholder="Ask a question about the current molecule. Shift+Enter = newline"></textarea>
+          <div class="chat-buttons">
+            <button id="btnSend">Send</button>
+            <button id="btnClear" class="secondary">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel cd-panel">
+        <div class="panel-header">
+          <h2>ChemDoodle Components</h2>
+          <div class="panel-actions">
+            <button id="btnCDLoadSmiles" class="secondary">Load current SMILES</button>
+            <button id="btnCDUseEditor">Use editor as current</button>
+            <button id="btnCDRender3D" class="secondary">Render 3D from current</button>
+            <a class="link" href="chemdoodle-docs.html" target="_blank">Docs</a>
+          </div>
+        </div>
+        <div class="cd-grid">
+          <div class="cd-block">
+            <div class="cd-title">2D Structure Editor</div>
+            <canvas id="cdEditor" width="520" height="300"></canvas>
+          </div>
+          <div class="cd-block">
+            <div class="cd-title">3D WebGL Viewer</div>
+            <canvas id="cd3d" width="520" height="300"></canvas>
+          </div>
+          <div class="cd-block">
+            <div class="cd-title">Periodic Table</div>
+            <canvas id="cdPT" width="520" height="300"></canvas>
+            <div id="cdPTInfo" class="status"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer. SVG generation supported. ChemDoodle components integrated.</div>
+    <div>For educational use only; may be incomplete or inaccurate. Always verify with primary sources.</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
