@@ -1,4 +1,6 @@
-/* Simple MolView-like client-only app using PubChem + 3Dmol.js + SmilesDrawer */
+/* MolView-like client app using PubChem + 3Dmol.js + SmilesDrawer
+   Now with optional Gemini (Flash 2.5) backend for AI answers via /api/ai.
+*/
 
 const els = {
   queryInput: document.getElementById('queryInput'),
@@ -20,6 +22,12 @@ let current = {
   cid: null,
   smiles: null,
   properties: {},
+};
+
+const aiService = {
+  online: false,
+  model: '',
+  checked: false,
 };
 
 function isLikelySmiles(text) {
@@ -193,6 +201,7 @@ function generateSummary(p) {
   return parts.filter(Boolean).join(' ');
 }
 
+// Client-side fallback AI
 function generateAIAnswer(question, p) {
   const q = (question || '').toLowerCase();
   if (!q || /summary|summarize|overview|properties/.test(q)) {
@@ -208,6 +217,44 @@ function generateAIAnswer(question, p) {
   if (/permeab|psa|polar surface/.test(q)) return summarizePSA(p.TPSA);
 
   return 'I can summarize properties, formula, MW, SMILES, InChI, lipophilicity (XLogP), H-bond donors/acceptors, rotatable bonds, and TPSA. Ask for a "summary" to begin.';
+}
+
+async function askServerAI(question) {
+  try {
+    const r = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: question || 'Give a brief property summary.',
+        properties: current.properties || {},
+        smiles: current.smiles || null,
+        cid: current.cid || null,
+      })
+    });
+    if (!r.ok) throw new Error('AI request failed');
+    const j = await r.json();
+    return j.answer || 'No answer produced.';
+  } catch (e) {
+    console.warn('AI backend error:', e);
+    return null;
+  }
+}
+
+async function checkAIStatus() {
+  try {
+    const r = await fetch('/api/ai/status');
+    if (r.ok) {
+      const j = await r.json();
+      aiService.online = !!j.online;
+      aiService.model = j.model || '';
+    } else {
+      aiService.online = false;
+    }
+  } catch (e) {
+    aiService.online = false;
+  } finally {
+    aiService.checked = true;
+  }
 }
 
 async function showCompoundByCID(cid) {
@@ -234,13 +281,17 @@ async function showCompoundByCID(cid) {
     await render3DFromSDF(sdf);
   } catch (e3d) {
     els.threeDStatus.textContent = '3D structure not available.';
-    // Clear viewer
     const viewer = $3Dmol.createViewer(els.viewer3d);
     viewer.render();
   }
 
-  // Default AI summary
-  els.aiOutput.textContent = generateSummary(current.properties);
+  if (aiService.online) {
+    els.aiOutput.textContent = 'Generating summary with AI...';
+    const ans = await askServerAI('Summarize key properties concisely.');
+    els.aiOutput.textContent = ans || generateSummary(current.properties);
+  } else {
+    els.aiOutput.textContent = generateSummary(current.properties);
+  }
 }
 
 function showAlternativeCIDs(cids) {
@@ -324,22 +375,36 @@ function setupDnD() {
 }
 
 function setupAI() {
-  els.btnAskAI.addEventListener('click', () => {
-    const question = els.aiQuestion.value;
-    const answer = generateAIAnswer(question, current.properties || {});
-    els.aiOutput.textContent = answer;
+  els.btnAskAI.addEventListener('click', async () => {
+    const question = els.aiQuestion.value || 'Give a brief property summary.';
+    if (aiService.online) {
+      els.btnAskAI.disabled = true;
+      const prev = els.aiOutput.textContent;
+      els.aiOutput.textContent = 'Thinking...';
+      const answer = await askServerAI(question);
+      els.aiOutput.textContent = answer || prev;
+      els.btnAskAI.disabled = false;
+    } else {
+      const answer = generateAIAnswer(question, current.properties || {});
+      els.aiOutput.textContent = answer;
+    }
   });
   els.aiQuestion.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') els.btnAskAI.click();
   });
 }
 
-function main() {
+async function main() {
+  await checkAIStatus();
   els.btnSearch.addEventListener('click', handleSearch);
   els.btnRenderSmiles.addEventListener('click', handleRenderSmiles);
   els.queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSearch(); });
   setupDnD();
   setupAI();
+  if (!aiService.online) {
+    // hint to the user
+    els.aiOutput.textContent = 'AI backend offline. Using built-in summaries. Configure GEMINI_API_KEY and run the server to enable AI.';
+  }
 }
 
 main();
