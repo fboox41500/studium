@@ -44,19 +44,36 @@ Notes
 Stack
 - HTML/CSS/JavaScript (client-only front end)
 - 3Dmol.js (3D visualization)
-- SmilesDrawer (2D depiction)
+- SmilesDrawer (2D depiction and SVG output)
+- ChemDoodle Web Components (2D editor, 3D WebGL viewer, periodic table)
 - PubChem PUG REST API (compound data)
 - Node.js + Express (optional backend)
 - Google Generative Language API (Gemini) via REST
 
 Project layout
 - /web            Static front-end assets
+- /web/chemdoodle-docs.html  Integration docs for ChemDoodle components
 - /server         Minimal Node/Express backend exposing /api/ai
+
+ChemDoodle integration
+- Components included:
+  - StructureEditorCanvas (canvas id: cdEditor) to draw/edit molecules
+  - TransformCanvas3D (canvas id: cd3d) to render 3D molecules (from SDF)
+  - PeriodicTableCanvas (canvas id: cdPT)
+- CDN includes (already in index.html):
+  <link rel="stylesheet" href="https://web.chemdoodle.com/assets/css/ChemDoodleWeb.css" />
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb.js"></script>
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb-uis.js"></script>
+- App controls in the ChemDoodle panel:
+  - Load current SMILES: loads the selected molecule into the editor
+  - Use editor as current: exports SMILES from the editor and updates app state
+  - Render 3D from current: displays last fetched PubChem 3D SDF in ChemDoodle 3D viewer
+- See web/chemdoodle-docs.html for code snippets and usage.
 
 Extending
 - Swap/augment AI providers by editing server/index.js to call another model. The client simply POSTs to /api/ai with question + context.
-- Add a 2D editor: Integrate JSME or Ketcher to draw/export SMILES/MOL directly in-browser.
+- Add spectra: use ChemDoodle SpectrumCanvas for NMR/IR if you have data sources.
 - More data: Pull hazard classifications and spectra from additional data providers or PubChem PUG-View headings.
 
 License
-- This example uses only client-side code with CDN libraries plus an optional backend proxy. Review 3Dmol.js, SmilesDrawer, and Google API terms before distribution.
+- This example uses only client-side code with CDN libraries plus an optional backend proxy. Review 3Dmol.js, SmilesDrawer, ChemDoodle Web Components, and Google API terms before distribution.

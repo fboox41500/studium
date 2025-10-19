@@ -41,6 +41,7 @@ let current = {
 };
 
 let lastSVG = '';
+let lastSDF = '';
 
 const aiService = {
   online: false,
@@ -152,6 +153,7 @@ function init3DViewer() {
 
 async function render3DFromSDF(sdf) {
   els.threeDStatus.textContent = '';
+  lastSDF = sdf || '';
   const viewer = init3DViewer();
   try {
     viewer.addModel(sdf, 'sdf');
@@ -161,6 +163,13 @@ async function render3DFromSDF(sdf) {
   } catch (e) {
     els.threeDStatus.textContent = '3D render failed: ' + e.message;
   }
+  // Also mirror to ChemDoodle 3D if available
+  try {
+    if (window.ChemDoodle && cd.viewer3d && typeof ChemDoodle.readMOL === 'function') {
+      const mol = ChemDoodle.readMOL(lastSDF);
+      cd.viewer3d.loadMolecule(mol);
+    }
+  } catch {}
 }
 
 function renderProps(p) {
@@ -632,6 +641,58 @@ async function copySVG() {
   }
 }
 
+// ChemDoodle integration
+const cd = { editor: null, viewer3d: null, pt: null };
+
+function initChemDoodle() {
+  if (!window.ChemDoodle) return;
+  try {
+    cd.editor = new ChemDoodle.StructureEditorCanvas('cdEditor', 520, 300);
+  } catch {}
+  try {
+    cd.viewer3d = new ChemDoodle.TransformCanvas3D('cd3d', 520, 300);
+  } catch {}
+  try {
+    cd.pt = new ChemDoodle.PeriodicTableCanvas('cdPT', 520, 300);
+  } catch {}
+}
+
+function setupChemDoodleButtons() {
+  if (!window.ChemDoodle) return;
+  const load = document.getElementById('btnCDLoadSmiles');
+  const useEditor = document.getElementById('btnCDUseEditor');
+  const render3D = document.getElementById('btnCDRender3D');
+  load && load.addEventListener('click', () => {
+    if (!current.smiles) { chatAddAssistant('No SMILES in context. Search first or draw in the editor.'); return; }
+    try {
+      const mol = ChemDoodle.readSMILES(current.smiles);
+      cd.editor && cd.editor.loadMolecule(mol);
+    } catch (e) { chatAddAssistant('Failed to load SMILES into editor.'); }
+  });
+  useEditor && useEditor.addEventListener('click', () => {
+    try {
+      const mol = cd.editor && cd.editor.getMolecule ? cd.editor.getMolecule() : null;
+      if (!mol) return;
+      if (ChemDoodle.writeSMILES) {
+        const smi = ChemDoodle.writeSMILES(mol);
+        current.smiles = smi;
+        render2D(smi);
+        chatAddAssistant('Updated current molecule from editor.');
+      } else {
+        chatAddAssistant('Cannot export SMILES from editor in this environment.');
+      }
+    } catch (e) { chatAddAssistant('Failed to use editor molecule.'); }
+  });
+  render3D && render3D.addEventListener('click', () => {
+    if (!lastSDF) { chatAddAssistant('No 3D SDF available. Search a compound that has 3D conformers.'); return; }
+    try {
+      const mol = ChemDoodle.readMOL(lastSDF);
+      cd.viewer3d && cd.viewer3d.loadMolecule(mol);
+      chatAddAssistant('Rendered 3D in ChemDoodle viewer.');
+    } catch (e) { chatAddAssistant('Failed to render SDF in ChemDoodle 3D viewer.'); }
+  });
+}
+
 async function main() {
   await checkAIStatus();
   els.btnSearch.addEventListener('click', handleSearch);
@@ -640,6 +701,8 @@ async function main() {
   setupDnD();
   setup2DControls();
   setupChat();
+  initChemDoodle();
+  setupChemDoodleButtons();
   if (!aiService.online) {
     chatAddAssistant('AI backend offline. Using built-in summaries. Configure GEMINI_API_KEY and run the server to enable AI.');
   } else {

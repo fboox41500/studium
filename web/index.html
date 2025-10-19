@@ -9,6 +9,10 @@
   <script src="https://3dmol.org/build/3Dmol-min.js"></script>
   <!-- SmilesDrawer for 2D depiction -->
   <script src="https://cdn.jsdelivr.net/npm/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+  <!-- ChemDoodle Web Components -->
+  <link rel="stylesheet" href="https://web.chemdoodle.com/assets/css/ChemDoodleWeb.css" />
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb.js"></script>
+  <script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb-uis.js"></script>
 </head>
 <body>
   <header class="app-header">
@@ -79,11 +83,38 @@
           </div>
         </div>
       </div>
+
+      <div class="panel cd-panel">
+        <div class="panel-header">
+          <h2>ChemDoodle Components</h2>
+          <div class="panel-actions">
+            <button id="btnCDLoadSmiles" class="secondary">Load current SMILES</button>
+            <button id="btnCDUseEditor">Use editor as current</button>
+            <button id="btnCDRender3D" class="secondary">Render 3D from current</button>
+            <a class="link" href="chemdoodle-docs.html" target="_blank">Docs</a>
+          </div>
+        </div>
+        <div class="cd-grid">
+          <div class="cd-block">
+            <div class="cd-title">2D Structure Editor</div>
+            <canvas id="cdEditor" width="520" height="300"></canvas>
+          </div>
+          <div class="cd-block">
+            <div class="cd-title">3D WebGL Viewer</div>
+            <canvas id="cd3d" width="520" height="300"></canvas>
+          </div>
+          <div class="cd-block">
+            <div class="cd-title">Periodic Table</div>
+            <canvas id="cdPT" width="520" height="300"></canvas>
+            <div id="cdPTInfo" class="status"></div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer class="app-footer">
-    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer. SVG generation supported.</div>
+    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer. SVG generation supported. ChemDoodle components integrated.</div>
     <div>For educational use only; may be incomplete or inaccurate. Always verify with primary sources.</div>
   </footer>
 

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChemDoodle Components – Integration Docs</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://web.chemdoodle.com/assets/css/ChemDoodleWeb.css" />
+  <style>
+    .doc { max-width: 900px; margin: 20px auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; color: #f8fafc; }
+    .doc h1 { margin-top: 0; font-size: 22px; }
+    code, pre { background: #0b1220; border: 1px solid #1e293b; border-radius: 8px; padding: 8px; color: #e2e8f0; display: block; overflow-x: auto; }
+    a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+  <main class="doc">
+    <h1>ChemDoodle Web Components – Integration</h1>
+    <p>This application integrates <a href="https://web.chemdoodle.com/" target="_blank" rel="noreferrer">ChemDoodle Web Components</a> to provide an in-browser 2D structure editor, a 3D WebGL viewer, and a periodic table widget.</p>
+
+    <h2>CDN includes</h2>
+    <pre>&lt;link rel="stylesheet" href="https://web.chemdoodle.com/assets/css/ChemDoodleWeb.css" /&gt;
+&lt;script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb.js"&gt;&lt;/script&gt;
+&lt;script src="https://web.chemdoodle.com/assets/js/ChemDoodleWeb-uis.js"&gt;&lt;/script&gt;</pre>
+
+    <h2>Components used</h2>
+    <ul>
+      <li><b>StructureEditorCanvas</b> – 2D drawing and editing</li>
+      <li><b>TransformCanvas3D</b> – WebGL-based interactive 3D viewer</li>
+      <li><b>PeriodicTableCanvas</b> – interactive periodic table</li>
+    </ul>
+
+    <h2>Instantiating components</h2>
+    <pre>const editor = new ChemDoodle.StructureEditorCanvas('cdEditor', 520, 300);
+const viewer3d = new ChemDoodle.TransformCanvas3D('cd3d', 520, 300);
+const pt = new ChemDoodle.PeriodicTableCanvas('cdPT', 520, 300);</pre>
+
+    <h2>Loading molecules</h2>
+    <p>From SMILES:</p>
+    <pre>const mol = ChemDoodle.readSMILES('C1=CC=CC=C1');
+editor.loadMolecule(mol);</pre>
+    <p>From SDF/MOL text (e.g., PubChem 3D record):</p>
+    <pre>const mol3d = ChemDoodle.readMOL(sdfText);
+viewer3d.loadMolecule(mol3d);</pre>
+
+    <h2>Exporting from the editor</h2>
+    <pre>const editedMol = editor.getMolecule();
+const smiles = ChemDoodle.writeSMILES(editedMol);
+// Use the SMILES with other parts of the app</pre>
+
+    <h2>In this app</h2>
+    <ul>
+      <li>Use “Load current SMILES” to load the selected molecule into the editor.</li>
+      <li>Use “Use editor as current” to update the main app with your edited molecule.</li>
+      <li>Use “Render 3D from current” to display the latest fetched 3D SDF in the ChemDoodle 3D viewer.</li>
+    </ul>
+
+    <p>For complete documentation, visit the official site: <a href="https://web.chemdoodle.com/" target="_blank" rel="noreferrer">web.chemdoodle.com</a>.</p>
+  </main>
+</body>
+</html>
