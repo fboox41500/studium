@@ -12,8 +12,11 @@
 </head>
 <body>
   <header class="app-header">
-    <div class="logo">AI MolExplorer</div>
-    <div class="tagline">Search, visualize, and understand molecules</div>
+    <div class="brand">
+      <div class="logo">AI MolExplorer</div>
+      <div class="tagline">Search, visualize, and understand molecules</div>
+    </div>
+    <div id="aiStatus" class="ai-status" title="AI backend status">AI: Checking…</div>
   </header>
 
   <main class="container">
@@ -21,7 +24,7 @@
       <div class="input-row">
         <input id="queryInput" type="text" placeholder="Search by name (e.g., aspirin) or paste SMILES" />
         <button id="btnSearch">Search</button>
-        <button id="btnRenderSmiles">Render SMILES</button>
+        <button id="btnRenderSmiles" class="secondary">Render SMILES</button>
       </div>
       <div class="help-text">Tip: Try terms like "glucose", "caffeine", or SMILES like "C1=CC=CC=C1".</div>
       <div class="alt-results" id="altResults" hidden></div>
@@ -29,25 +32,43 @@
 
     <section class="results-grid">
       <div class="panel">
-        <h2>2D Structure</h2>
+        <div class="panel-header">
+          <h2>2D Structure</h2>
+          <div class="panel-actions">
+            <label>Theme
+              <select id="drawerTheme">
+                <option value="light" selected>Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+            <label>W <input id="svgWidth" type="number" min="100" max="2000" value="500" /></label>
+            <label>H <input id="svgHeight" type="number" min="100" max="2000" value="350" /></label>
+            <button id="btnPreviewSVG" class="secondary">Preview SVG</button>
+            <button id="btnDownloadSVG">Download SVG</button>
+            <button id="btnCopySVG" class="secondary">Copy SVG</button>
+          </div>
+        </div>
         <canvas id="canvas2d" class="twod-canvas" width="500" height="350"></canvas>
+        <div id="svgContainer" class="svg-container" hidden></div>
         <div id="twoDStatus" class="status"></div>
       </div>
 
       <div class="panel">
-        <h2>3D Structure</h2>
-        <div id="viewer3d" class="viewer3d"></div>
+        <div class="panel-header">
+          <h2>3D Structure</h2>
+        </div>
+        <div id="viewer3d" class="viewer3d"><div class="viewer3d-overlay" id="viewerOverlay">Load or drop a file to render 3D…</div></div>
         <div id="threeDStatus" class="status"></div>
         <div class="dropzone" id="dropzone">Drop SDF/MOL files here to visualize</div>
       </div>
 
       <div class="panel">
-        <h2>Properties</h2>
+        <div class="panel-header"><h2>Properties</h2></div>
         <div class="props" id="props"></div>
       </div>
 
       <div class="panel ai-panel">
-        <h2>AI Assistant</h2>
+        <div class="panel-header"><h2>AI Assistant</h2></div>
         <div id="aiOutput" class="ai-output">Ask about the molecule to get a summary or property-specific answers.</div>
         <div class="ai-input-row">
           <input id="aiQuestion" type="text" placeholder="Ask e.g., What are the key properties? Is it lipophilic?" />
@@ -58,7 +79,7 @@
   </main>
 
   <footer class="app-footer">
-    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer.</div>
+    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer. SVG generation supported.</div>
     <div>For educational use only; may be incomplete or inaccurate. Always verify with primary sources.</div>
   </footer>
 

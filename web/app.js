@@ -1,5 +1,6 @@
 /* MolView-like client app using PubChem + 3Dmol.js + SmilesDrawer
    Now with optional Gemini (Flash 2.5) backend for AI answers via /api/ai.
+   Enhanced UI with SVG export (preview, download, copy) and theme/size controls.
 */
 
 const els = {
@@ -8,6 +9,7 @@ const els = {
   btnRenderSmiles: document.getElementById('btnRenderSmiles'),
   altResults: document.getElementById('altResults'),
   canvas2d: document.getElementById('canvas2d'),
+  svgContainer: document.getElementById('svgContainer'),
   twoDStatus: document.getElementById('twoDStatus'),
   viewer3d: document.getElementById('viewer3d'),
   threeDStatus: document.getElementById('threeDStatus'),
@@ -16,6 +18,14 @@ const els = {
   aiOutput: document.getElementById('aiOutput'),
   aiQuestion: document.getElementById('aiQuestion'),
   btnAskAI: document.getElementById('btnAskAI'),
+  // New UI controls
+  drawerTheme: document.getElementById('drawerTheme'),
+  svgWidth: document.getElementById('svgWidth'),
+  svgHeight: document.getElementById('svgHeight'),
+  btnPreviewSVG: document.getElementById('btnPreviewSVG'),
+  btnDownloadSVG: document.getElementById('btnDownloadSVG'),
+  btnCopySVG: document.getElementById('btnCopySVG'),
+  aiStatus: document.getElementById('aiStatus'),
 };
 
 let current = {
@@ -23,6 +33,8 @@ let current = {
   smiles: null,
   properties: {},
 };
+
+let lastSVG = '';
 
 const aiService = {
   online: false,
@@ -89,6 +101,16 @@ async function fetchSDF3D(cid) {
   return sdf;
 }
 
+function get2DTheme() {
+  return els.drawerTheme?.value === 'dark' ? 'dark' : 'light';
+}
+
+function getDrawSize() {
+  const w = Math.max(100, Math.min(2000, Number(els.svgWidth?.value || 500)));
+  const h = Math.max(100, Math.min(2000, Number(els.svgHeight?.value || 350)));
+  return { w, h };
+}
+
 function render2D(smiles) {
   return new Promise((resolve) => {
     els.twoDStatus.textContent = '';
@@ -96,9 +118,13 @@ function render2D(smiles) {
       els.twoDStatus.textContent = 'No SMILES available for 2D rendering.';
       return resolve();
     }
-    const drawer = new SmilesDrawer.Drawer({ width: els.canvas2d.width, height: els.canvas2d.height });
+    const { w, h } = getDrawSize();
+    // Sync canvas size to controls
+    if (els.canvas2d) { els.canvas2d.width = w; els.canvas2d.height = h; }
+
+    const drawer = new SmilesDrawer.Drawer({ width: w, height: h, compactDrawing: true });
     SmilesDrawer.parse(smiles, (tree) => {
-      drawer.draw(tree, els.canvas2d, 'light', false);
+      drawer.draw(tree, els.canvas2d, get2DTheme(), false);
       resolve();
     }, (err) => {
       els.twoDStatus.textContent = '2D rendering failed: ' + err;
@@ -254,6 +280,88 @@ async function checkAIStatus() {
     aiService.online = false;
   } finally {
     aiService.checked = true;
+    updateAIStatusBadge();
+  }
+}
+
+function updateAIStatusBadge() {
+  if (!els.aiStatus) return;
+  if (aiService.online) {
+    els.aiStatus.textContent = `AI: Online (${aiService.model || 'Gemini'})`;
+    els.aiStatus.classList.add('online');
+    els.aiStatus.classList.remove('offline');
+  } else {
+    els.aiStatus.textContent = 'AI: Offline';
+    els.aiStatus.classList.add('offline');
+    els.aiStatus.classList.remove('online');
+  }
+}
+
+async function buildSVG(smiles, width, height, theme) {
+  return new Promise((resolve) => {
+    try {
+      els.svgContainer.innerHTML = '';
+      const drawer = new SmilesDrawer.SvgDrawer({ width, height, compactDrawing: true });
+      SmilesDrawer.parse(smiles, (tree) => {
+        // Draw into container by id; library will create an <svg> element
+        drawer.draw(tree, 'svgContainer', theme, false);
+        const svgEl = els.svgContainer.querySelector('svg');
+        const svgStr = svgEl ? svgEl.outerHTML : els.svgContainer.innerHTML.trim();
+        resolve(svgStr);
+      }, (err) => {
+        els.twoDStatus.textContent = 'SVG generation failed: ' + err;
+        resolve('');
+      });
+    } catch (e) {
+      els.twoDStatus.textContent = 'SVG generation failed: ' + (e?.message || e);
+      resolve('');
+    }
+  });
+}
+
+async function previewSVG() {
+  if (!current.smiles) {
+    els.twoDStatus.textContent = 'No SMILES available to generate SVG.';
+    return;
+  }
+  const { w, h } = getDrawSize();
+  const theme = get2DTheme();
+  lastSVG = await buildSVG(current.smiles, w, h, theme);
+  if (lastSVG) {
+    els.svgContainer.hidden = false;
+    els.twoDStatus.textContent = 'SVG preview ready.';
+  }
+}
+
+function makeFileName(ext) {
+  const base = (current.properties?.IUPACName || current.properties?.InChIKey || (current.cid ? 'CID' + current.cid : 'molecule')).toString();
+  const safe = base.replace(/[^A-Za-z0-9-_]+/g, '_').slice(0, 60) || 'molecule';
+  return `${safe}.${ext}`;
+}
+
+async function downloadSVG() {
+  if (!current.smiles) return;
+  if (!lastSVG) await previewSVG();
+  if (!lastSVG) return;
+  const blob = new Blob([lastSVG], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = makeFileName('svg');
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
+}
+
+async function copySVG() {
+  if (!current.smiles) return;
+  if (!lastSVG) await previewSVG();
+  if (!lastSVG) return;
+  try {
+    await navigator.clipboard.writeText(lastSVG);
+    els.twoDStatus.textContent = 'SVG copied to clipboard.';
+  } catch (e) {
+    els.twoDStatus.textContent = 'Clipboard copy failed.';
   }
 }
 
@@ -261,10 +369,13 @@ async function showCompoundByCID(cid) {
   current.cid = cid;
   current.properties = {};
   current.smiles = null;
+  lastSVG = '';
 
   els.props.innerHTML = 'Loading properties...';
   els.twoDStatus.textContent = '';
   els.threeDStatus.textContent = '';
+  els.svgContainer.hidden = true;
+  els.svgContainer.innerHTML = '';
 
   try {
     const p = await fetchProps(cid);
@@ -310,9 +421,10 @@ function showAlternativeCIDs(cids) {
     const btn = document.createElement('button');
     btn.textContent = `CID ${cid}`;
     btn.style.padding = '6px 10px';
-    btn.style.border = '1px solid #cbd5e1';
-    btn.style.borderRadius = '6px';
-    btn.style.background = '#fff';
+    btn.style.border = '1px solid #334155';
+    btn.style.borderRadius = '8px';
+    btn.style.background = '#0b1220';
+    btn.style.color = '#e2e8f0';
     btn.style.cursor = 'pointer';
     btn.onclick = () => showCompoundByCID(cid);
     list.appendChild(btn);
@@ -346,6 +458,9 @@ function handleRenderSmiles() {
   current.cid = null;
   current.properties = { CanonicalSMILES: q };
   current.smiles = q;
+  lastSVG = '';
+  els.svgContainer.hidden = true;
+  els.svgContainer.innerHTML = '';
   render2D(q);
   els.props.innerHTML = '<div class="label">Canonical SMILES</div><div>' + q + '</div>';
   els.threeDStatus.textContent = '3D not available for direct SMILES (search a known compound to fetch 3D).';
@@ -394,6 +509,17 @@ function setupAI() {
   });
 }
 
+function setup2DControls() {
+  if (!els.drawerTheme) return;
+  els.drawerTheme.addEventListener('change', () => { if (current.smiles) render2D(current.smiles); });
+  const resize = () => { if (current.smiles) render2D(current.smiles); };
+  els.svgWidth.addEventListener('change', resize);
+  els.svgHeight.addEventListener('change', resize);
+  els.btnPreviewSVG.addEventListener('click', previewSVG);
+  els.btnDownloadSVG.addEventListener('click', downloadSVG);
+  els.btnCopySVG.addEventListener('click', copySVG);
+}
+
 async function main() {
   await checkAIStatus();
   els.btnSearch.addEventListener('click', handleSearch);
@@ -401,6 +527,7 @@ async function main() {
   els.queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSearch(); });
   setupDnD();
   setupAI();
+  setup2DControls();
   if (!aiService.online) {
     // hint to the user
     els.aiOutput.textContent = 'AI backend offline. Using built-in summaries. Configure GEMINI_API_KEY and run the server to enable AI.';
