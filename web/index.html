@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MolView-like: AI-enabled Molecular Explorer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- 3Dmol.js for 3D molecular visualization -->
+  <script src="https://3dmol.org/build/3Dmol-min.js"></script>
+  <!-- SmilesDrawer for 2D depiction -->
+  <script src="https://cdn.jsdelivr.net/npm/smiles-drawer@2.0.1/dist/smiles-drawer.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">AI MolExplorer</div>
+    <div class="tagline">Search, visualize, and understand molecules</div>
+  </header>
+
+  <main class="container">
+    <section class="search-section">
+      <div class="input-row">
+        <input id="queryInput" type="text" placeholder="Search by name (e.g., aspirin) or paste SMILES" />
+        <button id="btnSearch">Search</button>
+        <button id="btnRenderSmiles">Render SMILES</button>
+      </div>
+      <div class="help-text">Tip: Try terms like "glucose", "caffeine", or SMILES like "C1=CC=CC=C1".</div>
+      <div class="alt-results" id="altResults" hidden></div>
+    </section>
+
+    <section class="results-grid">
+      <div class="panel">
+        <h2>2D Structure</h2>
+        <canvas id="canvas2d" class="twod-canvas" width="500" height="350"></canvas>
+        <div id="twoDStatus" class="status"></div>
+      </div>
+
+      <div class="panel">
+        <h2>3D Structure</h2>
+        <div id="viewer3d" class="viewer3d"></div>
+        <div id="threeDStatus" class="status"></div>
+        <div class="dropzone" id="dropzone">Drop SDF/MOL files here to visualize</div>
+      </div>
+
+      <div class="panel">
+        <h2>Properties</h2>
+        <div class="props" id="props"></div>
+      </div>
+
+      <div class="panel ai-panel">
+        <h2>AI Assistant</h2>
+        <div id="aiOutput" class="ai-output">Ask about the molecule to get a summary or property-specific answers.</div>
+        <div class="ai-input-row">
+          <input id="aiQuestion" type="text" placeholder="Ask e.g., What are the key properties? Is it lipophilic?" />
+          <button id="btnAskAI">Ask</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div>Data from PubChem PUG REST. 3D by 3Dmol.js. 2D by SmilesDrawer.</div>
+    <div>For educational use only; may be incomplete or inaccurate. Always verify with primary sources.</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
