@@ -21,13 +21,13 @@ app.post('/api/ai', async (req, res) => {
   try {
     if (!GEMINI_API_KEY) return res.status(503).json({ error: 'AI backend not configured' });
 
-    const { question, properties, smiles, cid } = req.body || {};
+    const { question, properties, smiles, cid, history } = req.body || {};
 
     const lines = [];
     lines.push('You are an expert chemistry assistant embedded in a molecule viewer.');
     lines.push('Be concise, correct, and avoid speculation. If data is missing, say so.');
-    lines.push('Use the provided properties as ground truth.');
-    lines.push('Respond in plain text, no markdown.');
+    lines.push('Use the provided properties as ground truth for any factual answers.');
+    lines.push('If requested, keep answers short and readable. Preserve line breaks.');
 
     const context = {
       cid: cid ?? null,
@@ -35,19 +35,31 @@ app.post('/api/ai', async (req, res) => {
       properties: properties ?? {},
     };
 
-    const userText = [
-      'User question:', String(question || 'Give a brief property summary.'), '',
-      'Context JSON:', JSON.stringify(context, null, 2)
-    ].join('\n');
+    // Build conversation contents
+    const contents = [];
+    if (Array.isArray(history)) {
+      for (const m of history) {
+        const role = m && m.role === 'assistant' ? 'model' : 'user';
+        const text = String(m && m.text || '');
+        if (!text) continue;
+        contents.push({ role, parts: [{ text }] });
+      }
+    }
 
-    const prompt = lines.join('\n') + '\n\n' + userText;
+    const qText = String(question || 'Give a brief property summary.');
+    const userText = [
+      qText,
+      '',
+      'Context JSON:',
+      JSON.stringify(context, null, 2)
+    ].join('\n');
+    contents.push({ role: 'user', parts: [{ text: userText }] });
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
     const body = {
-      contents: [
-        { role: 'user', parts: [{ text: prompt }] }
-      ],
+      systemInstruction: { role: 'system', parts: [{ text: lines.join('\n') }] },
+      contents,
       generationConfig: {
         temperature: 0.2,
         topK: 40,

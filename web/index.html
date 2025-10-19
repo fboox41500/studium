@@ -69,10 +69,14 @@
 
       <div class="panel ai-panel">
         <div class="panel-header"><h2>AI Assistant</h2></div>
-        <div id="aiOutput" class="ai-output">Ask about the molecule to get a summary or property-specific answers.</div>
-        <div class="ai-input-row">
-          <input id="aiQuestion" type="text" placeholder="Ask e.g., What are the key properties? Is it lipophilic?" />
-          <button id="btnAskAI">Ask</button>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div id="typing" class="typing" hidden>Assistant is typing…</div>
+        <div class="chat-input-row">
+          <textarea id="chatInput" rows="2" placeholder="Ask a question about the current molecule. Shift+Enter = newline"></textarea>
+          <div class="chat-buttons">
+            <button id="btnSend">Send</button>
+            <button id="btnClear" class="secondary">Clear</button>
+          </div>
         </div>
       </div>
     </section>
