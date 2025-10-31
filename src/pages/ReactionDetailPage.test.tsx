@@ -49,6 +49,14 @@ describe('ReactionDetailPage', () => {
       ],
       visualizations: [
         {
+          id: 'viz-ketcher',
+          type: 'ketcher' as const,
+          content: '$RXN\n\n  Ketcher Example\n\n  1  1\n$MOL\n  KetcherMol\n\n  0  0  0  0  0  0  0  0  0  0  0  0\nM  END\n$MOL\n  KetcherMol\n\n  0  0  0  0  0  0  0  0  0  0  0  0\nM  END',
+          caption: 'Rendered reaction',
+          height: 360,
+          hiddenControls: ['open', 'save']
+        },
+        {
           type: 'html' as const,
           content: '<div data-testid="reaction-html">Visualisation</div>',
           caption: 'Automated depiction'
@@ -72,6 +80,12 @@ describe('ReactionDetailPage', () => {
     expect(screen.getByText('Temperature')).toBeInTheDocument();
     expect(screen.getByText('90 °C')).toBeInTheDocument();
     expect(screen.getByText('Boronic acid')).toBeInTheDocument();
+
+    const reactionFrame = screen.getByTitle('Rendered reaction');
+    expect(reactionFrame).toBeInTheDocument();
+    expect(reactionFrame).toHaveAttribute('src', expect.stringContaining('/ketcher/index.html?'));
+    expect(reactionFrame).toHaveAttribute('src', expect.stringContaining('moll=%24RXN'));
+
     expect(screen.getByTestId('reaction-html')).toBeInTheDocument();
   });
 

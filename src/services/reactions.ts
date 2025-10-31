@@ -17,10 +17,19 @@ export interface ReactionOutcome {
   html?: string;
 }
 
+export type ReactionVisualizationType = 'image' | 'html' | 'ketcher' | 'rdkit';
+
 export interface ReactionVisualization {
-  type: 'image' | 'html';
+  id?: string;
+  type: ReactionVisualizationType;
   content: string;
   caption?: string;
+  format?: 'mol' | 'smiles' | 'rxn';
+  width?: number;
+  height?: number;
+  hiddenControls?: string[];
+  svgOptions?: string | Record<string, unknown>;
+  basePath?: string;
 }
 
 export interface ReactionDetail {

@@ -149,3 +149,30 @@ section + section {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
 }
+
+[data-ketcher-viewer] {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+[data-ketcher-viewer] iframe {
+  width: 100%;
+  display: block;
+  background: #ffffff;
+}
+
+[data-rdkit-structure] {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+[data-rdkit-structure] svg {
+  max-width: 100%;
+  height: auto;
+}
