@@ -1,0 +1,1 @@
+"""Studium API package."""
