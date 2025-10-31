@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Polished analytics workspace with accessible navigation, theming, and shared UI components."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Studium Workspace</title>
+  </head>
+  <body data-theme="light">
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
+
+    <div class="app-shell" data-app-root>
+      <header class="topbar" role="banner">
+        <div class="topbar__left">
+          <button
+            class="icon-button topbar__menu"
+            type="button"
+            data-nav-toggle
+            aria-expanded="false"
+            aria-controls="sidebar"
+            aria-label="Toggle primary navigation"
+          >
+            <span aria-hidden="true" class="icon icon-menu"></span>
+          </button>
+          <div class="brand" role="presentation">
+            <span class="brand__logo" aria-hidden="true">◧</span>
+            <span class="brand__name">Studium</span>
+          </div>
+        </div>
+        <div class="topbar__search">
+          <label class="sr-only" for="globalSearch">Search</label>
+          <input
+            id="globalSearch"
+            name="globalSearch"
+            type="search"
+            autocomplete="off"
+            placeholder="Search insights, datasets, or people"
+          />
+        </div>
+        <div class="topbar__actions" role="group" aria-label="User actions">
+          <button
+            class="icon-button"
+            type="button"
+            data-theme-toggle
+            aria-pressed="false"
+            aria-label="Enable dark theme"
+          >
+            <span aria-hidden="true" class="icon icon-sun"></span>
+          </button>
+          <button
+            class="icon-button"
+            type="button"
+            data-alert-demo
+            aria-label="Show latest notifications"
+          >
+            <span aria-hidden="true" class="icon icon-bell"></span>
+          </button>
+          <button class="profile" type="button" aria-haspopup="menu" aria-expanded="false">
+            <span class="profile__avatar" aria-hidden="true">AH</span>
+            <span class="profile__name">Ava Harper</span>
+            <span class="icon icon-caret" aria-hidden="true"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside id="sidebar" class="sidebar" aria-label="Primary navigation">
+          <div class="sidebar__section sidebar__section--label">Workspace</div>
+          <nav class="sidebar__nav" aria-label="Main">
+            <ul>
+              <li>
+                <a class="sidebar__link is-active" href="#overview" aria-current="page">
+                  <span class="icon icon-grid" aria-hidden="true"></span>
+                  Overview
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#projects">
+                  <span class="icon icon-folder" aria-hidden="true"></span>
+                  Projects
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#datasets">
+                  <span class="icon icon-database" aria-hidden="true"></span>
+                  Datasets
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#automation">
+                  <span class="icon icon-zap" aria-hidden="true"></span>
+                  Automations
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#reports">
+                  <span class="icon icon-file" aria-hidden="true"></span>
+                  Reports
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="sidebar__section sidebar__section--label">Teams</div>
+          <nav class="sidebar__nav" aria-label="Teams">
+            <ul>
+              <li>
+                <a class="sidebar__link" href="#chemistry">
+                  <span class="avatar avatar--tiny" aria-hidden="true">Ch</span>
+                  Chemistry Lab
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#pharma">
+                  <span class="avatar avatar--tiny" aria-hidden="true">Ph</span>
+                  Pharmacology
+                </a>
+              </li>
+              <li>
+                <a class="sidebar__link" href="#materials">
+                  <span class="avatar avatar--tiny" aria-hidden="true">Ma</span>
+                  Materials Science
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <footer class="sidebar__footer">
+            <button class="sidebar__cta" type="button">Invite collaborators</button>
+          </footer>
+        </aside>
+
+        <main id="mainContent" class="main" role="main" tabindex="-1">
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h1>Research workspace</h1>
+              <p class="lede">
+                Monitor progress across projects, surface key insights, and keep your teams aligned.
+              </p>
+            </div>
+            <div class="intro-actions" role="group" aria-label="Primary actions">
+              <button class="btn btn--primary" type="button">Create project</button>
+              <button class="btn btn--secondary" type="button">Share update</button>
+            </div>
+          </div>
+
+          <section class="grid grid--balanced" aria-labelledby="statusHeading">
+            <h2 id="statusHeading" class="sr-only">Status highlights</h2>
+            <article class="panel">
+              <header class="panel__header">
+                <h3>Active studies</h3>
+                <span class="tag tag--success">+8.2%</span>
+              </header>
+              <p class="panel__value">27</p>
+              <p class="panel__meta">Tracking across 3 research clusters</p>
+            </article>
+            <article class="panel">
+              <header class="panel__header">
+                <h3>Upcoming reviews</h3>
+                <span class="tag tag--warning">3 due</span>
+              </header>
+              <p class="panel__value">12</p>
+              <p class="panel__meta">Next milestone: November 4</p>
+            </article>
+            <article class="panel">
+              <header class="panel__header">
+                <h3>Open actions</h3>
+                <span class="tag tag--info">54 tasks</span>
+              </header>
+              <p class="panel__value">68%</p>
+              <p class="panel__meta">On track to complete by end of sprint</p>
+            </article>
+          </section>
+
+          <section class="grid" aria-labelledby="activityHeading">
+            <h2 id="activityHeading">Latest activity</h2>
+            <article class="panel panel--stretch" data-loader-target data-panel="activity">
+              <header class="panel__header">
+                <div>
+                  <h3>Recent updates</h3>
+                  <p class="panel__meta">Live data refreshes every 15 minutes</p>
+                </div>
+                <button class="btn btn--ghost" type="button">View all</button>
+              </header>
+              <div class="panel__body" data-activity-body></div>
+            </article>
+            <article class="panel panel--stretch">
+              <header class="panel__header">
+                <div>
+                  <h3>Team availability</h3>
+                  <p class="panel__meta">Auto-syncs with calendar status</p>
+                </div>
+              </header>
+              <div class="panel__body">
+                <dl class="availability-list">
+                  <div>
+                    <dt>Dr. Nia Bennett</dt>
+                    <dd>
+                      <span class="status status--available"></span>
+                      Available • Reviewing analytics
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Dr. Luca Onishi</dt>
+                    <dd>
+                      <span class="status status--busy"></span>
+                      In lab • Spectrometry session
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Dr. Mina Farooqi</dt>
+                    <dd>
+                      <span class="status status--offline"></span>
+                      Offline • Field sampling
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          </section>
+
+          <section class="grid grid--columns" aria-labelledby="insightsHeading">
+            <h2 id="insightsHeading">Insights &amp; quality</h2>
+            <article class="panel panel--stretch" data-error-boundary>
+              <header class="panel__header">
+                <div>
+                  <h3>AI-assisted summaries</h3>
+                  <p class="panel__meta">Automated narratives for recent experiments</p>
+                </div>
+              </header>
+              <div class="panel__body" data-summary-body>
+                <div class="placeholder">Loading insights…</div>
+              </div>
+            </article>
+            <article class="panel panel--stretch">
+              <header class="panel__header">
+                <div>
+                  <h3>Quality checks</h3>
+                  <p class="panel__meta">Monitoring assay compliance and anomalies</p>
+                </div>
+                <button class="btn btn--ghost" type="button">Export</button>
+              </header>
+              <div class="panel__body">
+                <ul class="quality-list" role="list">
+                  <li>
+                    <span class="dot dot--success" aria-hidden="true"></span>
+                    <div>
+                      <p class="quality-list__title">Spectral fidelity</p>
+                      <p class="quality-list__meta">99.2% match vs. baseline</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="dot dot--warning" aria-hidden="true"></span>
+                    <div>
+                      <p class="quality-list__title">Sample integrity alerts</p>
+                      <p class="quality-list__meta">4 flagged this week</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="dot dot--info" aria-hidden="true"></span>
+                    <div>
+                      <p class="quality-list__title">Documentation completeness</p>
+                      <p class="quality-list__meta">87% with peer review</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div
+      id="alertStack"
+      class="alert-stack"
+      role="region"
+      aria-live="polite"
+      aria-label="Application notifications"
+    ></div>
+
+    <div class="nav-overlay" data-nav-overlay hidden aria-hidden="true"></div>
+
+    <script type="module" src="./scripts/app.js"></script>
+  </body>
+</html>
