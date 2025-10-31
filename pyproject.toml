@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "studium-api"
+version = "0.1.0"
+description = "FastAPI service scaffold for Studium ORD integrations"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [
+    { name = "Studium", email = "engineering@studium.example" }
+]
+keywords = ["fastapi", "ord", "studium"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers"
+]
+dependencies = [
+    "fastapi>=0.110.0,<1.0.0",
+    "uvicorn[standard]>=0.29.0,<1.0.0",
+    "pydantic-settings>=2.2.1,<3.0.0",
+    "python-dotenv>=1.0.1,<2.0.0",
+    "redis>=5.0.3,<6.0.0",
+    "ord-interface @ git+https://github.com/open-reaction-database/ord-interface.git"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0,<9.0.0",
+    "ruff>=0.5.0,<1.0.0",
+    "anyio>=4.0.0,<5.0.0"
+]
+
+[project.urls]
+homepage = "https://studium.example"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.2.0,<9.0.0",
+    "ruff>=0.5.0,<1.0.0",
+    "anyio>=4.0.0,<5.0.0"
+]
+
+[tool.uv.scripts]
+serve = "uvicorn studium_api.main:app --reload"
+worker = "uvicorn studium_api.main:app"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/studium_api"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    { include = "studium_api", from = "src" }
+]
