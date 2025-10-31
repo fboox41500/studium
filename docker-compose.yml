@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  ord-api:
+    build: .
+    image: ord-service:local
+    environment:
+      ORD_INTERFACE_TESTING: "TRUE"
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/ord"
+      REDIS_URL: "redis://redis:6379/0"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ord
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
