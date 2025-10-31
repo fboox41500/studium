@@ -1,0 +1,151 @@
+:root {
+  color-scheme: light dark;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #f4f6f8;
+  color: #20262d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #f4f6f8;
+}
+
+a {
+  color: inherit;
+}
+
+main {
+  padding: 2rem;
+}
+
+section + section {
+  margin-top: 2rem;
+}
+
+[data-card] {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.75rem;
+}
+
+[data-card] h2 {
+  margin-top: 0;
+}
+
+[data-muted] {
+  color: #52606d;
+  margin-bottom: 1.25rem;
+}
+
+[data-error] {
+  color: #c0392b;
+}
+
+[data-loading] {
+  color: #52606d;
+  font-style: italic;
+}
+
+[data-accordion] {
+  border-top: 1px solid #e5e7eb;
+}
+
+[data-accordion-item] {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+[data-accordion-trigger] {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 1.1rem 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+[data-accordion-panel] {
+  padding-bottom: 1.2rem;
+}
+
+[data-tablist] {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+[data-tab-button] {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.35rem 0.9rem;
+  background: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+[data-tab-button][data-active="true"] {
+  background: #223cf3;
+  border-color: #223cf3;
+  color: white;
+}
+
+[data-definition-list] {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) 1fr;
+  gap: 0.5rem 1.5rem;
+}
+
+[data-definition-term] {
+  font-weight: 600;
+  color: #374151;
+}
+
+[data-definition-description] {
+  color: #4b5563;
+}
+
+[data-table] {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+[data-table] thead tr {
+  background: #f4f6f8;
+}
+
+[data-table] th,
+[data-table] td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+[data-visualization] {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+[data-visualization] img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+[data-visualization-html] {
+  border-radius: 8px;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}

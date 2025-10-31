@@ -1,0 +1,56 @@
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.card {
+  max-width: 640px;
+  width: min(90vw, 640px);
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.submit {
+  align-self: start;
+  background: #223cf3;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  background: #cbd5f5;
+  cursor: not-allowed;
+}
+
+.results {
+  margin-top: 1.75rem;
+}
+
+.resultLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: #223cf3;
+}
